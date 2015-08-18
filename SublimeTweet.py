@@ -78,22 +78,29 @@ class ReadTweetsCommand(sublime_plugin.WindowCommand):
 
   def showTweetsOnPanel(self):
     self.tweet_texts = []
+    self.tweet_texts.append(['================================================================================', '', ''])
     if self.tweets and len(self.tweets) > 0:
       for s in self.tweets:
-        firstLine  = s['text']
+        secondLine  = s['text']
+        if len(secondLine) > 100:
+          splitpos = secondLine.find(' ', 100)
+          thirdLine = secondLine[splitpos:]
+          secondLine = secondLine[0:splitpos]
+        else:
+          thirdLine = ''
         created_at = datetime.strptime(s['created_at'], '%a %b %d %H:%M:%S +0000 %Y')
         created_at_relative = reltime(created_at)
-        secondLine = '@%s (%s)' % (s['user']['screen_name'], created_at_relative)
+        firstLine = '@%s (%s)' % (s['user']['screen_name'], created_at_relative)
         if 'new' in s and s['new']: 
-          secondLine = '☀ ' + secondLine
+          firstLine = '☀ ' + firstLine
         if 'favorited' in s and s['favorited']:
-          secondLine = '★ ' + secondLine
+          firstLine = '★ ' + firstLine
         if 'retweeted' in s and s['retweeted']:
-          secondLine = '↺ ' + secondLine
+          firstLine = '↺ ' + firstLine
 
-        self.tweet_texts.append([firstLine, secondLine])
+        self.tweet_texts.append([firstLine, secondLine, thirdLine])
     else:
-      self.tweet_texts.append(['No tweets to show', 'If you think it\'s an error - please contact an author'])
+      self.tweet_texts.append(['No tweets to show', 'If you think it\'s an error - please contact an author', ''])
     self.showTweets()
 
   def showTweets(self, number = None):
